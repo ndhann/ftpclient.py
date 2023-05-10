@@ -1,5 +1,14 @@
 #!/usr/bin/env python3
 
+# ftpclient.py - Nathan Dhanasekaran
+# command format:
+# - get: 3 arguments, <user>:<password>@<server> get <remote_file>
+#        this will output the file into the current directory with the same name as on the server
+# - ls: 3 arguments, <user>:<password>@<server> ls <remote_dir>
+#       directory listing of the remote server at <remote_dir>
+# - put: 4 arguments, <user>:<password>@<server> <command> <local_source> <remote_destination>
+#        uploads local_source to remote_destination. NOTE: remote_destination must include a filename; the local file's name is not automatically appended!
+
 import socket
 import sys
 
