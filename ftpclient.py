@@ -21,12 +21,12 @@ def main():
     server = None
     port = 21
     cmd = None
-    filepath = None
-    localfile = None
+    source = None
+    destination = None
 
     if len(sys.argv) == 5:
         # the extra argument is assumed to be the local file to upload
-        localfile = sys.argv[4]
+        destination = sys.argv[4]
     # extract arguments here
     auth = sys.argv[1]
     user = auth.split(':')[0]
@@ -38,8 +38,8 @@ def main():
     port = 21 # by default at least
     cmd = sys.argv[2]
     #print(cmd)
-    filepath = sys.argv[3]
-    #print(filepath)
+    source = sys.argv[3]
+    #print(source)
 
     sock = socket.create_connection((server, port))
     file = sock.makefile('r')
@@ -78,7 +78,7 @@ def main():
     datasock = socket.create_connection((datahost, dataport))
 
     if cmd == "ls":
-        request = "LIST " + filepath + "\r\n"
+        request = "LIST " + source + "\r\n"
         sock.sendall(request.encode())
         response = file.readline()
         print(response)
@@ -100,7 +100,7 @@ def main():
         exitconn(sock, datasock)
         return 0 # success!
     elif cmd == "get":
-        request = "RETR " + filepath + "\r\n"
+        request = "RETR " + source + "\r\n"
         sock.sendall(request.encode())
         response = file.readline()
         print(response)
@@ -110,7 +110,7 @@ def main():
         # get file from data connection
         datafile = datasock.makefile('rb')
         data = datafile.read()
-        localname = filepath.split("/")[-1]
+        localname = source.split("/")[-1]
         with open(localname, 'wb') as file:
             file.write(data)
             print("success")
@@ -118,12 +118,12 @@ def main():
             return 0 # success!
     elif cmd == "put":
         # not sure if we need to add the filename to the path we want to upload the file to...
-        request = "STOR " + filepath + "/" + localfile + "\r\n"
+        request = "STOR " + destination + "\r\n"
         sock.sendall(request.encode())
         response = file.readline()
         print(response)
         if "Permission denied" not in response:
-            with open(localfile, 'rb') as file:
+            with open(source, 'rb') as file:
                 datafile = datasock.makefile('wb')
                 data = file.read()
                 datafile.write(data)
